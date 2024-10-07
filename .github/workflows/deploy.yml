@@ -1,0 +1,35 @@
+name: Deploy service with Compose
+
+on:
+  workflow_call:
+    inputs:
+      repository_url:
+        required: true
+        type: string
+      docker_ssh_host:
+        type: string
+        default: "ubuntu@dev.ai.arcadia.fun"
+    secrets:
+      DEV_SSH_KEY:
+        required: true
+
+jobs:
+  deploy-service-docker:
+    runs-on: ubuntu-latest
+    name: Deploying app as Docker container
+    concurrency: ${{ github.ref_name }}
+    steps:
+      - name: Setup ssh key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEV_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+      - name: Retrieve new update from repo
+        continue-on-error: true
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{inputs.docker_ssh_host}} 'rm -rf /tmp/repo'
+          ssh -o StrictHostKeyChecking=no ${{inputs.docker_ssh_host}} 'git clone ${{inputs.repository_url}} /tmp/repo'
+      - name: Deploy app with Docker Compose
+        continue-on-error: true
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{inputs.docker_ssh_host}} 'docker compose up -d -f /tmp/repo/nakama'
