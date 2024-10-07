@@ -6,9 +6,6 @@ on:
       repository_url:
         required: true
         type: string
-      docker_ssh_host:
-        type: string
-        default: "ubuntu@dev.ai.arcadia.fun"
     secrets:
       DEV_SSH_KEY:
         required: true
@@ -27,9 +24,8 @@ jobs:
       - name: Retrieve new update from repo
         continue-on-error: true
         run: |
-          ssh -o StrictHostKeyChecking=no ${{inputs.docker_ssh_host}} 'rm -rf /tmp/repo'
-          ssh -o StrictHostKeyChecking=no ${{inputs.docker_ssh_host}} 'git clone ${{inputs.repository_url}} /tmp/repo'
+          ssh -o StrictHostKeyChecking=no -p ${{secrets.SSH_PORT}} ${{secrets.DOCKER_SSH_HOST}} 'rm -rf /tmp/repo'
+          ssh -o StrictHostKeyChecking=no -p ${{secrets.SSH_PORT}} ${{secrets.DOCKER_SSH_HOST}} 'git clone ${{inputs.repository_url}} /tmp/repo'
       - name: Deploy app with Docker Compose
-        continue-on-error: true
         run: |
-          ssh -o StrictHostKeyChecking=no ${{inputs.docker_ssh_host}} 'docker compose up -d -f /tmp/repo/nakama'
+          ssh -o StrictHostKeyChecking=no -p ${{secrets.SSH_PORT}} ${{secrets.DOCKER_SSH_HOST}} 'docker compose up -d -f /tmp/repo/nakama'
