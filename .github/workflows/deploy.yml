@@ -28,4 +28,4 @@ jobs:
           ssh -o StrictHostKeyChecking=no -p ${{secrets.SSH_PORT}} ${{secrets.DOCKER_SSH_HOST}} 'git clone ${{inputs.repository_url}} /tmp/repo'
       - name: Deploy app with Docker Compose
         run: |
-          ssh -o StrictHostKeyChecking=no -p ${{secrets.SSH_PORT}} ${{secrets.DOCKER_SSH_HOST}} 'docker compose -f /tmp/repo/nakama up -d'
+          ssh -o StrictHostKeyChecking=no -p ${{secrets.SSH_PORT}} ${{secrets.DOCKER_SSH_HOST}} 'docker compose -f /tmp/repo/nakama/docker-compose.yml up -d'
