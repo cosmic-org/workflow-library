@@ -28,7 +28,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -p ${{secrets.SSH_PORT}} ${{secrets.DOCKER_SSH_HOST}} 'git clone ${{inputs.repository_url}} /tmp/repo'
       - name: Change AI model path volume
         run: |
-          ssh -o StrictHostKeyChecking=no -p ${{secrets.SSH_PORT}} ${{secrets.DOCKER_SSH_HOST}} 'sed -i "0,/\.\/model/s//\/tmp\/repo\/nakama\/model/g" /tmp/repo/nakama/docker-compose.yml'
+          ssh -o StrictHostKeyChecking=no -p ${{secrets.SSH_PORT}} ${{secrets.DOCKER_SSH_HOST}} 'sed -i "0,/\.\/model/s//\/opt\/nakama\/model/g" /tmp/repo/nakama/docker-compose.yml'
       - name: Deploy app with Docker Compose
         run: |
           ssh -o StrictHostKeyChecking=no -p ${{secrets.SSH_PORT}} ${{secrets.DOCKER_SSH_HOST}} 'docker compose -f /tmp/repo/nakama/docker-compose.yml up -d'
